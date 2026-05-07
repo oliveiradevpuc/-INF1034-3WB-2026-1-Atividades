@@ -1,0 +1,48 @@
+from random import choice
+
+# TEMAS
+temas = ['instrumento musical', 'fruta', 'heroi', 'animal', 'profissao']
+tema_escolhido = choice(temas)
+
+# PALAVRAS TEMA
+if tema_escolhido == 'instrumento musical':
+    palavras = ['violao', 'guitarra', 'bateria', 'teclado', 'piano', 'flauta']
+elif tema_escolhido == 'fruta':
+    palavras = ['banana', 'morango', 'abacaxi', 'laranja', 'melancia', 'uva']
+elif tema_escolhido == 'heroi':
+    palavras = ['batman', 'superman', 'aquaman', 'wolverine', 'hulk', 'flash']
+elif tema_escolhido == 'animal':
+    palavras = ['cachorro', 'elefante', 'girafa', 'leao', 'tigre', 'gato']
+elif tema_escolhido == 'profissao':
+    palavras = ['medico', 'professor', 'engenheiro', 'advogado', 'padeiro', 'ator']
+
+palavra_escolhida = choice(palavras)
+letras = ['_'] * len(palavra_escolhida)
+vidas = 6
+
+def forca():
+    global vidas
+    letra = input('Chute uma letra: ')
+    
+    if letra in palavra_escolhida:
+        for i in range(len(palavra_escolhida)):
+            if palavra_escolhida[i] == letra:
+                letras[i] = letra
+    else:
+        vidas -= 1
+        print(f'Letra errada! - Vidas: {vidas}')
+        
+    print(' '.join(letras)) # O JOIN SE USA PARA UNIR ELEMENTOS DE UMA LISTA! (iteráveis)
+
+print(f'Seu tema é: {tema_escolhido}')
+print(' '.join(letras))
+
+# LOOP'S
+while vidas > 0:
+    forca()
+    if palavra_escolhida == ''.join(letras):
+        print('Você ganhou! Parabéns!')
+        break
+
+if vidas == 0:
+    print(f'Você perdeu! A palavra era: {palavra_escolhida}')
