@@ -1,0 +1,45 @@
+from random import randint
+
+def verificar_palpite(tentado, secreto):
+    if tentado > secreto:
+        print('1')
+    elif tentado < secreto:
+        print('-1')
+    else:
+        print('0 - Número de tentativas = 1')
+
+    if jogador == 'Humano':
+        chute = int(input('Digite seu próximo palpite: '))
+        contador = 1
+        while chute != secreto:
+            if chute > secreto:
+                print('1')
+            elif chute < secreto:
+                print('-1')
+            contador += 1
+            chute = int(input('Digite seu próximo palpite: '))
+        print(f'0 - Número de tentativas: {contador}')
+
+    elif jogador == 'Computador':
+        palpite_pc = randint(1, 1023)
+        contador = 1
+        while palpite_pc != secreto:
+            if palpite_pc > secreto:
+                print('1')
+            elif palpite_pc < secreto:
+                print('-1')
+            contador += 1
+            palpite_pc = randint(1, 1023)
+        print(f'0 - Número de tentativas: {contador}')
+
+
+jogador = input('QUEM VAI JOGAR - Humano ou Computador? ')
+numero_secreto = randint(1, 1023)
+
+if jogador == 'Humano':
+    primeiro_palpite = int(input('Tente adivinhar um número de 1 a 1023: '))
+    verificar_palpite(primeiro_palpite, numero_secreto)
+
+elif jogador == 'Computador':
+    numero_escolhido = int(input('Escolha um número para o computador tentar adivinhar: '))
+    verificar_palpite(numero_secreto, numero_escolhido)
