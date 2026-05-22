@@ -1,1 +1,129 @@
 
+import turtle
+from random import randint
+from time import sleep
+
+def randomColor(): ## cor aleatoria
+    return (randint(0, 255), randint(0, 255), randint(0, 255))
+
+# ======================================================
+# FRACTAL 1 — Neve
+# ======================================================
+
+def koch(t, tamanho, nivel):
+    if nivel == 0:
+        t.fd(tamanho)
+    else:
+        tamanho /= 3
+
+        koch(t, tamanho, nivel - 1)
+
+        t.lt(60)
+        koch(t, tamanho, nivel - 1)
+
+        t.rt(120)
+        koch(t, tamanho, nivel - 1)
+
+        t.lt(60)
+        koch(t, tamanho, nivel - 1)
+
+def snowflake(t, tamanho, nivel):
+    t.pd()
+    t.pencolor(randomColor())
+
+    for i in range(3):
+        koch(t, tamanho, nivel)
+        t.rt(120)
+
+# ======================================================
+# FRACTAL 2 — ESPIRAL RECURSIVA
+# ======================================================
+
+def spiralFractal(t, tamanho):
+    if tamanho < 5:
+        return
+
+    t.pencolor(randomColor())
+    t.fd(tamanho)
+    t.rt(25)
+
+    spiralFractal(t, tamanho * 0.95)
+
+# ======================================================
+# FRACTAL 3 — ÁRVORE MELHORADA
+# ======================================================
+
+def treeFractal(t, tamanho, nivel):
+    if nivel == 0:
+        return
+
+    t.pensize(nivel / 2)
+    t.pencolor(0, 255 // (nivel + 1), 0)
+
+    t.fd(tamanho)
+
+    t.rt(30) ## galho
+    treeFractal(t, tamanho * 0.75, nivel - 1)
+
+
+    t.lt(60) ## centro
+
+    treeFractal(t, tamanho * 0.75, nivel - 1) ## galho 2 
+
+    t.rt(30)
+    t.back(tamanho)
+
+# ======================================================
+# CONFIGURAÇÕES DA TELA
+# ======================================================
+
+screen = turtle.Screen()
+screen.bgcolor("black")
+
+turtle.colormode(255)
+
+t = turtle.Turtle()
+t.speed(0)
+t.hideturtle()
+
+# ======================================================
+# DESENHO 1 — FLOCO DE NEVE
+# ======================================================
+
+t.pu()
+t.goto(-200, 100)
+t.pd()
+
+snowflake(t, 300, 4)
+
+sleep(3)
+t.clear()
+
+# ======================================================
+# DESENHO 2 — ESPIRAL
+# ======================================================
+
+t.pu()
+t.goto(0, 0)
+t.setheading(0)
+t.pd()
+
+spiralFractal(t, 200)
+
+sleep(3)
+t.clear()
+
+# ======================================================
+# DESENHO 3 — ÁRVORE
+# ======================================================
+
+t.pu()
+t.goto(0, -250)
+t.setheading(90)
+t.pd()
+
+treeFractal(t, 120, 8)
+
+sleep(3)
+
+turtle.mainloop()
