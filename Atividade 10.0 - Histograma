@@ -1,0 +1,355 @@
+import pygame
+import random
+import sys
+
+# ======================================================
+# INICIANDO O PYGAME
+# ======================================================
+
+pygame.init()
+
+# ======================================================
+# CONFIGURAÇÕES DA TELA
+# ======================================================
+
+LARGURA = 1000
+ALTURA = 700
+
+TELA = pygame.display.set_mode((LARGURA, ALTURA))
+pygame.display.set_caption("Trabalho de Histogramas")
+
+CLOCK = pygame.time.Clock()
+
+# ======================================================
+# FONTES
+# ======================================================
+
+fonte = pygame.font.SysFont("arial", 20)
+fonte_titulo = pygame.font.SysFont("arial", 30)
+
+# ======================================================
+# CORES
+# ======================================================
+
+BRANCO = (255, 255, 255)
+PRETO = (0, 0, 0)
+CINZA = (180, 180, 180)
+
+# AZUL FIXO DAS BARRAS
+AZUL = (52, 152, 219)
+
+# ======================================================
+# HISTOGRAMA 1
+# LISTA ALEATÓRIA
+# ======================================================
+
+lista1 = []
+
+for i in range(50):
+    numero = random.randint(0, 99)
+    lista1.append(numero)
+
+# 5 faixas
+faixas1 = [0, 0, 0, 0, 0]
+
+for numero in lista1:
+
+    indice = numero // 20
+
+    if indice > 4:
+        indice = 4
+
+    faixas1[indice] += 1
+
+# ======================================================
+# HISTOGRAMA 2
+# LISTA ESTÁTICA
+# ======================================================
+
+lista2 = [
+    10, 15, 20, 25, 30,
+    35, 40, 45, 50, 55,
+    60, 65, 70, 75, 80,
+    85, 90, 95
+]
+
+# 6 faixas
+faixas2 = [0, 0, 0, 0, 0, 0]
+
+quantidade = random.randint(1, len(lista2))
+
+for i in range(quantidade):
+
+    numero = random.choice(lista2)
+
+    indice = numero // 16
+
+    if indice > 5:
+        indice = 5
+
+    faixas2[indice] += 1
+
+# ======================================================
+# HISTOGRAMA 3
+# INPUT DO USUÁRIO
+# ======================================================
+
+entrada_usuario = ""
+
+lista3 = []
+
+faixas3 = [0, 0, 0, 0, 0, 0, 0, 0]
+
+# ======================================================
+# FUNÇÃO PARA DESENHAR HISTOGRAMA
+# ======================================================
+
+def desenhar_histograma(valores, titulo):
+
+    TELA.fill(BRANCO)
+
+    # TÍTULO
+    texto_titulo = fonte_titulo.render(titulo, True, PRETO)
+
+    rect_titulo = texto_titulo.get_rect(center=(LARGURA // 2, 40))
+
+    TELA.blit(texto_titulo, rect_titulo)
+
+    # EIXOS
+    eixo_x = 100
+    eixo_y = 600
+
+    pygame.draw.line(TELA, PRETO, (eixo_x, eixo_y), (900, eixo_y), 3)
+
+    pygame.draw.line(TELA, PRETO, (eixo_x, eixo_y), (eixo_x, 100), 3)
+
+    # MAIOR VALOR
+    maior_valor = max(valores)
+
+    if maior_valor == 0:
+        maior_valor = 1
+
+    # ESCALA
+    altura_maxima = 400
+
+    escala = altura_maxima / maior_valor
+
+    # MARCAÇÕES DO EIXO Y
+    for i in range(maior_valor + 1):
+
+        y = eixo_y - (i * escala)
+
+        pygame.draw.line(
+            TELA,
+            CINZA,
+            (eixo_x - 5, y),
+            (eixo_x + 5, y),
+            2
+        )
+
+        texto_numero = fonte.render(str(i), True, PRETO)
+
+        TELA.blit(texto_numero, (eixo_x - 35, y - 10))
+
+    # DESENHANDO AS BARRAS
+    largura_barra = 70
+
+    espacamento = 20
+
+    for i in range(len(valores)):
+
+        valor = valores[i]
+
+        altura_barra = valor * escala
+
+        x = eixo_x + 50 + i * (largura_barra + espacamento)
+
+        y = eixo_y - altura_barra
+
+        pygame.draw.rect(
+            TELA,
+            AZUL,
+            (x, y, largura_barra, altura_barra)
+        )
+
+        # VALOR EM CIMA
+        texto_valor = fonte.render(str(valor), True, PRETO)
+
+        TELA.blit(texto_valor, (x + 20, y - 30))
+
+        # NOME DA FAIXA
+        texto_faixa = fonte.render(f"F{i+1}", True, PRETO)
+
+        TELA.blit(texto_faixa, (x + 20, eixo_y + 10))
+
+    # TEXTO DE AJUDA
+    texto_info = fonte.render(
+        "Use as setas ← → para trocar os histogramas",
+        True,
+        PRETO
+    )
+
+    TELA.blit(texto_info, (300, 650))
+
+# ======================================================
+# TELA DE INPUT
+# ======================================================
+
+def tela_input():
+
+    global entrada_usuario
+    global lista3
+    global faixas3
+
+    digitando = True
+
+    while digitando:
+
+        TELA.fill(BRANCO)
+
+        titulo = fonte_titulo.render(
+            "Digite números separados por vírgula",
+            True,
+            PRETO
+        )
+
+        TELA.blit(titulo, (180, 150))
+
+        caixa = pygame.Rect(150, 300, 700, 50)
+
+        pygame.draw.rect(TELA, CINZA, caixa)
+
+        texto = fonte.render(entrada_usuario, True, PRETO)
+
+        TELA.blit(texto, (160, 315))
+
+        instrucao = fonte.render(
+            "Pressione ENTER para confirmar",
+            True,
+            PRETO
+        )
+
+        TELA.blit(instrucao, (320, 400))
+
+        pygame.display.update()
+
+        for evento in pygame.event.get():
+
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if evento.type == pygame.KEYDOWN:
+
+                # ENTER
+                if evento.key == pygame.K_RETURN:
+
+                    try:
+
+                        lista3 = []
+
+                        numeros = entrada_usuario.split(",")
+
+                        for item in numeros:
+                            lista3.append(int(item))
+
+                        # RESETANDO FAIXAS
+                        faixas3 = [0, 0, 0, 0, 0, 0, 0, 0]
+
+                        for numero in lista3:
+
+                            indice = numero // 13
+
+                            if indice > 7:
+                                indice = 7
+
+                            faixas3[indice] += 1
+
+                        digitando = False
+
+                    except:
+                        entrada_usuario = ""
+
+                # APAGAR
+                elif evento.key == pygame.K_BACKSPACE:
+
+                    entrada_usuario = entrada_usuario[:-1]
+
+                # DIGITAÇÃO
+                else:
+
+                    if evento.unicode.isdigit() or evento.unicode == ",":
+
+                        entrada_usuario += evento.unicode
+
+# ======================================================
+# CHAMANDO INPUT
+# ======================================================
+
+tela_input()
+
+# ======================================================
+# MENU DOS HISTOGRAMAS
+# ======================================================
+
+histograma_atual = 0
+
+# ======================================================
+# LOOP PRINCIPAL
+# ======================================================
+
+while True:
+
+    CLOCK.tick(60)
+
+    for evento in pygame.event.get():
+
+        if evento.type == pygame.QUIT:
+
+            pygame.quit()
+            sys.exit()
+
+        if evento.type == pygame.KEYDOWN:
+
+            # PRÓXIMO
+            if evento.key == pygame.K_RIGHT:
+
+                histograma_atual += 1
+
+                if histograma_atual > 2:
+                    histograma_atual = 0
+
+            # ANTERIOR
+            if evento.key == pygame.K_LEFT:
+
+                histograma_atual -= 1
+
+                if histograma_atual < 0:
+                    histograma_atual = 2
+
+    # ==================================================
+    # MOSTRANDO HISTOGRAMAS
+    # ==================================================
+
+    if histograma_atual == 0:
+
+        desenhar_histograma(
+            faixas1,
+            "Histograma 1 - Lista Aleatória"
+        )
+
+    elif histograma_atual == 1:
+
+        desenhar_histograma(
+            faixas2,
+            "Histograma 2 - Lista Estática"
+        )
+
+    elif histograma_atual == 2:
+
+        desenhar_histograma(
+            faixas3,
+            "Histograma 3 - Input do Usuário"
+        )
+
+    pygame.display.update()
